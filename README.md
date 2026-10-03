@@ -1,58 +1,310 @@
-# Salesforce DX Project
+# Customer Support Ticket Priority Prediction and Automated Assignment System Using Agentforce
 
-Salesforce DX is a development approach that brings source-driven development, team collaboration, and continuous integration to the Salesforce Platform. Instead of working directly in an org through a web browser, you work with metadata as source files in a local DX project, track changes in version control, and deploy through automated processes.
+## 📌 Project Overview
 
-This project template gets you started with the tools and structure you need to build Salesforce applications using source control, scratch orgs, and the Salesforce CLI.
+This project is a Salesforce-based customer support automation system that uses **Agentforce** to analyze support ticket descriptions, determine ticket priority, and automate assignment for high-priority tickets.
 
-## Prerequisites
+The system is designed to reduce manual ticket prioritization and help support teams respond to urgent customer issues more efficiently.
 
-Before you start, make sure you have:
+## 🎯 Objectives
 
-- **Salesforce CLI** - Download from [developer.salesforce.com/tools/salesforcecli](https://developer.salesforce.com/tools/salesforcecli). See [Install Salesforce CLI](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_install_cli.htm) for details.
-- **VS Code with Salesforce Extension Pack** - See [Installation Instructions](https://developer.salesforce.com/docs/platform/sfvscode-extensions/guide/install.html) for details. Includes the Agentforce Vibes extension.
-- **A development org** - Sign up for a free Developer Edition org [here](https://developer.salesforce.com/signup).
-- **Dev Hub enabled** (optional, required to create scratch orgs) - You can enable Dev Hub in your development org under Setup > Dev Hub.  See [Provide Developers Access to Salesforce DX Tools](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_setup_dx_tools.htm).
+- Analyze customer support ticket descriptions.
+- Predict ticket priority as **High, Medium, or Low**.
+- Automatically trigger backend automation for high-priority tickets.
+- Assign high-priority tickets to an appropriate support agent.
+- Provide a clear action message through Agentforce.
+- Maintain ticket information in a custom Salesforce object.
 
-## Project Structure
+## ✨ Key Features
 
-Your DX project follows this structure:
+### 1. Support Ticket Management
 
-- **`force-app/main/default/`** - Your metadata source files live in this default package directory. You can configure additional package directories in the `sfdx-project.json` file.
-- **`config/`** - Scratch org definitions and project settings
-- **`scripts/`** - Automation scripts for common tasks
-- **`sfdx-project.json`** - Project manifest that defines package directories, namespace, API version, and other project-level settings
+A custom Salesforce object named **Support Ticket Intelligence** stores support ticket information.
 
-See [Salesforce DX Project Configuration](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_ws_config.htm).
+**API Name:** `Support_Ticket_Intelligence__c`
 
-## Get Started
+The object includes:
 
-Ready to start developing? The [Get Started with Salesforce DX](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_get_started_dx.htm) guide walks you through your first project, from creating a scratch org to creating a simple Apex class or LWC to deploying your code to a sandbox.
+| Field | Purpose |
+|---|---|
+| Ticket Number | Auto-generated ticket number |
+| Customer | Related customer account |
+| Contact | Related contact |
+| Issue Type | Technical, Billing, or General |
+| Description | Customer's issue description |
+| Priority Level | Low, Medium, or High |
+| Status | New, In Progress, or Resolved |
+| Created Date | Ticket creation date |
+| Assigned To | Assigned Salesforce user |
+| SLA Breach Risk | Indicates possible SLA breach |
+| Resolution Time | Ticket resolution time |
 
-## Common Salesforce CLI Commands
+## 🤖 Agentforce Integration
 
-Here are common CLI commands that you'll use the most:
+The project uses an Agentforce subagent named:
 
-- `sf org login web`: Authorize an org
-- `sf org open`: Open your org in a browser
-- `sf org create scratch`: Create a scratch org
-- `sf project deploy start`: Deploy metadata to your org
-- `sf project retrieve start`: Retrieve metadata from your org
-- `sf template generate <artifact>`: Scaffold new components, such as Apex classes and triggers, LWC components, Lightning apps, and more
-- `sf apex <command>`: Run Apex tests, run anonymous Apex blocks, and view logs
-- `sf data <command>`: Work with test data
-- `sf alias <command>`: Manage org aliases
-- `sf config <command>`: Configure CLI settings
+**Support Ticket Priority Analysis**
 
-## Use Agentforce Vibes to Build Lightning Apps
+**API Name:** `Support_Ticket_Priority_Analysis`
 
-Transform your ideas into custom Lightning apps that extend CRM workflows directly in Lightning Experience. Through natural conversations with Agentforce Vibes, implement custom objects and fields, complex business logic, and dynamic UI components. See [Build a Lightning App Using Agentforce Vibes](https://developer.salesforce.com/docs/platform/einstein-for-devs/guide/lexapp-overview.html).
+The Agentforce action accepts an **Account Name** and analyzes the latest support ticket associated with that account.
 
-## Additional Resources
+### Agentforce Workflow
 
-- [Agentforce Vibes Developer Guide](https://developer.salesforce.com/docs/platform/einstein-for-devs/guide/einstein-overview.html)
-- [Salesforce CLI Installation Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_intro.htm)
-- [Salesforce DX Developer Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/)
-- [Salesforce CLI Command Reference](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/)
-- [Salesforce CLI Plugin Development Guide](https://developer.salesforce.com/docs/platform/salesforce-cli-plugin/guide/conceptual-overview.html)
-- [Salesforce VS Code Extensions Documentation](https://developer.salesforce.com/tools/vscode/)
+```text
+User provides Account Name
+          ↓
+Agentforce retrieves latest ticket
+          ↓
+Reads ticket description
+          ↓
+Analyzes urgency keywords
+          ↓
+Determines priority
+     ↙       ↓       ↘
+   High    Medium    Low
+     ↓       ↓       ↓
+Trigger    Return    Return
+Flow       result     result
+     ↓
+Create urgent task
+     ↓
+Assign support agent
+     ↓
+Return action message
+```
 
+## 🧠 Priority Prediction Logic
+
+The current implementation uses keyword-based analysis of the ticket description.
+
+### High Priority
+
+The ticket is classified as **High** when the description contains keywords such as:
+
+- `urgent`
+- `not working`
+- `failure`
+
+### Medium Priority
+
+The ticket is classified as **Medium** when the description contains keywords such as:
+
+- `issue`
+- `slow`
+- `delay`
+
+### Low Priority
+
+If none of the defined priority keywords are detected, the ticket is classified as **Low**.
+
+## ⚙️ Salesforce Flow Automation
+
+The project contains an **Auto-Launched Flow**:
+
+`Support_Ticket_Intellegence`
+
+The flow:
+
+1. Receives the Account Name.
+2. Finds the corresponding Account.
+3. Retrieves the latest support ticket.
+4. Analyzes the ticket description.
+5. Determines the priority level.
+6. Assigns the appropriate support level.
+7. For High-priority tickets, creates an urgent handling Task.
+8. Returns the ticket ID, priority, assigned agent, and action message.
+
+### High-Priority Automation
+
+For a High-priority ticket, the Flow creates a Task:
+
+**Subject:** `Urgent Ticket Handling`
+
+The task is associated with the support ticket and configured with:
+
+- Priority: High
+- Status: Not Started
+
+## 🔄 SLA Breach Risk
+
+The Flow also supports an SLA breach check based on the ticket's created date.
+
+Tickets older than the configured threshold can be identified as having an increased SLA breach risk.
+
+## 🏗️ Salesforce Components
+
+### Custom Object
+
+`Support_Ticket_Intelligence__c`
+
+### Flow
+
+`Support_Ticket_Intellegence`
+
+### Agentforce Subagent
+
+`Support_Ticket_Priority_Analysis`
+
+### Agentforce Planner Bundle
+
+`EmployeeCopilotPlanner`
+
+The repository also contains the Agentforce planner/action schema files retrieved from the Salesforce org.
+
+## 🛠️ Technology Stack
+
+- **Salesforce**
+- **Agentforce**
+- **Salesforce Flow**
+- **Salesforce DX**
+- **Git**
+- **GitHub**
+- **Metadata API**
+
+## 📁 Project Structure
+
+```text
+Customer-Support-Ticket-Agentforce/
+│
+├── force-app/
+│   └── main/
+│       └── default/
+│           ├── flows/
+│           │   └── Support_Ticket_Intellegence.flow-meta.xml
+│           │
+│           ├── genAiPlannerBundles/
+│           │   └── EmployeeCopilotPlanner/
+│           │       ├── EmployeeCopilotPlanner.genAiPlannerBundle
+│           │       └── ...
+│           │
+│           └── objects/
+│               └── Support_Ticket_Intelligence__c/
+│                   ├── object-meta.xml
+│                   ├── fields/
+│                   └── listViews/
+│
+├── config/
+├── scripts/
+├── .forceignore
+├── .gitignore
+├── package.json
+├── sfdx-project.json
+└── README.md
+```
+
+## 🚀 Setup / Deployment
+
+This repository follows the Salesforce DX project structure.
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/Kazoli11/Customer-Support-Ticket-Agentforce.git
+```
+
+### 2. Open the project
+
+```bash
+cd Customer-Support-Ticket-Agentforce
+```
+
+### 3. Authenticate to a Salesforce org
+
+```bash
+sf org login web --alias MyAgentforceProject
+```
+
+### 4. Set the target org
+
+```bash
+sf config set target-org=MyAgentforceProject
+```
+
+### 5. Deploy the project
+
+```bash
+sf project deploy start
+```
+
+> Agentforce metadata availability can depend on the Salesforce org, API version, and Agentforce configuration.
+
+## 🔍 Example
+
+### Example 1 — High Priority
+
+**Ticket Description:**
+
+```text
+The payment system is not working and this is urgent.
+```
+
+**Predicted Priority:**
+
+```text
+High
+```
+
+**Automation:**
+
+```text
+Urgent Ticket Handling Task
+Priority: High
+```
+
+### Example 2 — Medium Priority
+
+**Ticket Description:**
+
+```text
+The application is slow and there is a delay.
+```
+
+**Predicted Priority:**
+
+```text
+Medium
+```
+
+### Example 3 — Low Priority
+
+**Ticket Description:**
+
+```text
+I would like general information about the service.
+```
+
+**Predicted Priority:**
+
+```text
+Low
+```
+
+## 📌 Project Benefits
+
+- Reduces manual ticket prioritization.
+- Provides consistent priority classification.
+- Automates urgent-ticket handling.
+- Helps support teams identify high-priority tickets quickly.
+- Demonstrates the integration of Agentforce with Salesforce Flow and custom metadata.
+
+## 🔮 Future Enhancements
+
+Potential future improvements include:
+
+- AI/ML-based priority prediction instead of keyword-only classification.
+- More advanced SLA prediction.
+- Automatic routing based on support-agent skills and workload.
+- Customer sentiment analysis.
+- Dashboard and reporting for ticket priority trends.
+- Integration with notification systems for urgent tickets.
+
+## 👩‍💻 Project
+
+**Customer Support Ticket Priority Prediction and Automated Assignment System Using Agentforce**
+
+Built using Salesforce and Agentforce to demonstrate intelligent customer-support ticket analysis and automated workflow execution.
+
+## 📄 License
+
+This project is intended for educational and portfolio purposes.
